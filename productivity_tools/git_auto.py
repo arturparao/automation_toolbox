@@ -1,6 +1,7 @@
 import subprocess
 import os
 from datetime import datetime
+
 def run_git_retro():
     print("🚀 Automador de Commits (Retroativo ou Atual)")
     # Detecta a branch atual automaticamente
@@ -27,5 +28,6 @@ def run_git_retro():
         print(f"\n✅ Sucesso na branch {branch}!")
     except Exception as e:
         print(f"\n❌ Erro: {e}")
+
 if __name__ == "__main__":
     run_git_retro()
