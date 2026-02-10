@@ -47,7 +47,7 @@ FROM notas_fiscais
 
 GROUP BY 
     numero_nota 
-    
+
 HAVING COUNT(*) > 1;
 ```
 ## 🏆 Window Functions (Ranking e Evolução)
@@ -64,7 +64,5 @@ FROM despesas;
 ```
 ## 🛠️ Boas Práticas
 Alias (AS): Sempre use apelidos claros para colunas calculadas.
-
 Indentação: Mantenha o código legível (Palavras-chave em MAIÚSCULO).
-
 Filtros: Use sempre o WHERE antes do GROUP BY para ganhar performance.
