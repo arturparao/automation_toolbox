@@ -26,6 +26,11 @@ Consolida múltiplos arquivos (mensais ou por unidade) em uma única base de dad
 * **Funcionalidades**: Une vários arquivos Excel/CSV de uma pasta e cria uma coluna `origem_arquivo` para auditoria.
 * **Como usar**: Comando `unir`.
 
+### 5. **Data Filter (`data_filter.py`)**
+Extrator seletivo de dados para gerar relatórios específicos a partir de bases volumosas.
+* **Funcionalidades**: Filtra colunas por palavras-chave ou valores numéricos e exporta o resultado instantaneamente.
+* **Como usar**: Comando `filtrar`.
+
 ---
 
 ## 💻 Configurações de Terminal (WSL/Ubuntu)
@@ -37,3 +42,4 @@ alias auto='python3 ~/github/aparao/automation-toolbox/scripts/git_retro.py'
 alias limpar='python3 ~/github/aparao/automation-toolbox/scripts/clean_data.py'
 alias perfil='python3 ~/github/aparao/automation-toolbox/scripts/data_profiler.py'
 alias unir='python3 ~/github/aparao/automation-toolbox/scripts/data_merger.py'
+alias filtrar='python3 ~/github/aparao/automation-toolbox/scripts/data_filter.py'
