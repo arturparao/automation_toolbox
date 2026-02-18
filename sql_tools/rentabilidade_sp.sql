@@ -133,17 +133,17 @@ WITH pescaixa AS (
 	  , 'DEVOLUÇÃO'									TIPO
 	  ,PES.validade									VALIDADE
 
-  FROM t_pedcom										PED
-  INNER JOIN T_REC									REC
-		  ON PED.COD_PED							= REC.COD_PED
-		 AND CAST(REC.data_rec	AS DATE)			>= '2025-01-01'
-		 AND REC.tipo_rec							= 'D'
-  INNER JOIN PESCAIXA								PES
-		  ON REC.COD_BARRA	 					    = PES.cod_barra
-		 AND PES.status								<> 'C'
-  INNER JOIN T_PEDCOMIT								PIT
-		  ON REC.cod_ped							= PIT.cod_ped
-		 AND PES.cod_prod							= PIT.cod_prod
+FROM t_pedcom										PED
+INNER JOIN T_REC									REC
+	ON  PED.COD_PED	= REC.COD_PED
+	AND CAST(REC.data_rec	AS DATE) >= '2025-01-01'
+	AND REC.tipo_rec = 'D'
+INNER JOIN PESCAIXA	PES
+	ON  REC.COD_BARRA = PES.cod_barra
+	AND PES.status <> 'C'
+INNER JOIN T_PEDCOMIT PIT
+	ON  REC.cod_ped = PIT.cod_ped
+	AND PES.cod_prod = PIT.cod_prod
 ), 
 
 union_Table AS (
@@ -157,15 +157,15 @@ union_Table AS (
 )
 
 SELECT
-    SAIDAS.COD_PEDCAR,
-	SAIDAS.DATA,
-	SAIDAS.COD_EMP,
-	SAIDAS.COD_REPRES,
-	SAIDAS.STATUS,
-	SAIDAS.COD_PROD,
-	SAIDAS.COD_PROD2,
-	SAIDAS.QUANT,
-	SAIDAS.P1,
+    SAIDAS.cod_pedcar,
+	SAIDAS.data,
+	SAIDAS.cod_temp,
+	SAIDAS.cod_repres,
+	SAIDAS.status,
+	SAIDAS.cod_prod,
+	SAIDAS.cod_prod2,
+	SAIDAS.quant,
+	SAIDAS.p1,
 	CUSTO.valor AS CUSTO,
 	SAIDAS.sif,
 	SAIDAS.num_lote	AS SIF_TRANSFORMADO,
@@ -174,16 +174,16 @@ SELECT
 		THEN cast(SAIDAS.sif as numeric)
 		ELSE SAIDAS.num_lote
 	    END	AS SIF_FINAL,
-	SAIDAS.DATA_SAIDA,
-	SAIDAS.PESO_BRUTO,
-	SAIDAS.PESO_LIQUIDO,
-	SAIDAS.QUANTIDADE,
-	SAIDAS.CAIXAS,
-	SAIDAS.INVENTARIO,
-	SAIDAS.VALOR,
-	SAIDAS.TIPO,
-	SAIDAS.VALIDADE
+	SAIDAS.data_saida,
+	SAIDAS.peso_bruto,
+	SAIDAS.peso_liquido,
+	SAIDAS.quantidade,
+	SAIDAS.caixas,
+	SAIDAS.inventario,
+	SAIDAS.valor,
+	SAIDAS.tipo,
+	SAIDAS.validade
 FROM union_Table SAIDAS
 LEFT JOIN valorprod2 CUSTO
-	ON  SAIDAS.DATA_SAIDA = CAST((CUSTO.data+1) AS DATE)
+	ON  SAIDAS.data_saida = CAST((CUSTO.data+1) AS DATE)
 	AND SAIDAS.cod_prod2  = CUSTO.cod_prod
