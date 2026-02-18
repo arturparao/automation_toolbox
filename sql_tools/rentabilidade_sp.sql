@@ -144,13 +144,18 @@ WITH pescaixa AS (
   INNER JOIN T_PEDCOMIT								PIT
 		  ON REC.cod_ped							= PIT.cod_ped
 		 AND PES.cod_prod							= PIT.cod_prod
-), union_Table AS (
-SELECT * FROM BM
+), 
 
-UNION  all
-
-select * from TERCEIRO
+union_Table AS (
+    SELECT * 
+    FROM BM
+    
+    UNION  ALL
+    
+    SELECT * 
+    FROM TERCEIRO
 )
+
 SELECT
     SAIDAS.COD_PEDCAR,
 	SAIDAS.DATA,
@@ -181,4 +186,4 @@ SELECT
 FROM union_Table SAIDAS
 LEFT JOIN valorprod2 CUSTO
 	ON  SAIDAS.DATA_SAIDA = CAST((CUSTO.data+1) AS DATE)
-	 AND SAIDAS.cod_prod2  = CUSTO.cod_prod
+	AND SAIDAS.cod_prod2  = CUSTO.cod_prod
