@@ -32,87 +32,87 @@ WITH pescaixa AS (
     SELECT
         *
     FROM {{ ref('source_custo_sao_paulo')}}
-), BM AS (
-    
-    SELECT PED.COD_PEDCAR
-	  ,CAST(PES.data_sai AS DATE)				DATA
-	  ,PED.cod_emp
-	  ,PED.cod_repres
-	  ,PED.status
-	  ,CASE WHEN PES.cod_prod = '011000' and BC.PED IS NOT NULL
-			THEN '011009'
-			WHEN PES.cod_prod = '011001'  and BC.PED IS NOT NULL
-			THEN '011009'
-			WHEN PES.cod_prod = '011004'  and BC.PED IS NOT NULL
-			THEN '011009'
-			ELSE PES.cod_prod
-			END								cod_prod
-	  ,PES.COD_PROD2
-	  ,PIT.quant
-	  ,PIT.p1	P1
-	  ,PES.sif
-	  ,PES2.num_lote
-	  ,CAST(PED.EMBARQUE AS DATE)		AS DATA_SAIDA
-	  ,SUM(PES.peso_bruto)				AS PESO_BRUTO
-	  ,SUM(PES.peso_liq)				AS PESO_LIQUIDO
-	  ,SUM(PES.quant)					AS QUANTIDADE
-	  ,SUM(PES.NUM_CAIXAS)				AS CAIXAS
-	  ,CASE WHEN PES.cod_inv IS NULL
-			THEN 'NÃO'
-			ELSE 'SIM'
-			END							AS INVENTARIO	
-	  ,SUM(PES.peso_liq)*(PIT.p1)				AS VALOR
-	  ,'SAIDA'							AS TIPO
-	  ,pes.validade						AS VALIDADE
-
-
-  FROM pescaixa						PES  
-  INNER JOIN pedcarit				PIT  
-		  ON PIT.COD_PROD			= PES.COD_PROD
-		 AND PIT.cod_pedcar			= PES.cod_pedcar
-  INNER JOIN pedcarreg				PED  
-	      ON PIT.COD_PEDCAR			= PED.COD_PEDCAR
-   LEFT JOIN pescaixa				PES2
-		  ON PES.cod_barra_origem	= PES2.cod_barra
-
-   LEFT JOIN USU_TP_BC_SAIDA		BC  
-	      ON PES.cod_pedcar 	    = BC.PED
-		 AND CASE WHEN PES.cod_prod = '011000'
-				  THEN BC.TRA
-				  WHEN PES.cod_prod = '011001'
-				  THEN BC.DIA
-				  WHEN PES.cod_prod = '011004'
-				  THEN BC.PA
-				  ELSE '99999'
-				  END					= PES.cod_prod 
- WHERE CAST(PES.data_sai	AS DATE) >= '2025-01-01'
-   AND PES.status <> 'C'		  
-  GROUP BY PED.COD_PEDCAR
-		  ,CAST(PES.data_sai AS DATE)
-		  ,PED.cod_emp
-		  ,PED.cod_repres
-		  ,PED.status
-	  ,CASE WHEN PES.cod_prod = '011000' and BC.PED IS NOT NULL
-			THEN '011009'
-			WHEN PES.cod_prod = '011001'  and BC.PED IS NOT NULL
-			THEN '011009'
-			WHEN PES.cod_prod = '011004'  and BC.PED IS NOT NULL
-			THEN '011009'
-			ELSE PES.cod_prod
-			END	
-		  ,PES.COD_PROD2
-		  ,PIT.quant
-		  ,PIT.p1
-		  ,PES.sif
-		  ,PES2.num_lote
-		  ,CAST(PED.embarque AS DATE)
-		  ,CASE WHEN PES.cod_inv IS NULL
-			    THEN 'NÃO'
-				ELSE 'SIM'
-				END
-		   ,pes.validade	
 ), 
-TERCEIRO as (
+
+BM AS (
+    SELECT 
+        PED.cod_pedcar,
+	    CAST(PES.data_sai AS DATE) AS DATA,
+	    PED.cod_emp,
+	    PED.cod_repres,
+	    PED.status,
+	    PES.COD_PROD2
+	    PIT.quant
+	    PIT.p1	P1
+	    PES.sif
+	    PES2.num_lote
+	    CAST(PED.EMBARQUE AS DATE)  AS DATA_SAIDA
+	    SUM(PES.peso_bruto)         AS PESO_BRUTO
+	    SUM(PES.peso_liq)           AS PESO_LIQUIDO
+	    SUM(PES.quant)              AS QUANTIDADE
+	    SUM(PES.NUM_CAIXAS)         AS CAIXAS
+	    CASE 
+            WHEN PES.cod_inv IS NULL
+    	    THEN 'NÃO'
+    	    ELSE 'SIM'
+    	END							AS INVENTARIO	
+	    SUM(PES.peso_liq)*(PIT.p1)	AS VALOR
+	    'SAIDA'						AS TIPO
+	    pes.validade				AS VALIDADE
+        CASE
+            WHEN PES.cod_prod = '011000' AND BC.PED IS NOT NULL THEN '011009'
+    	    WHEN PES.cod_prod = '011001' AND BC.PED IS NOT NULL THEN '011009'
+    	    WHEN PES.cod_prod = '011004' AND BC.PED IS NOT NULL THEN '011009'
+    	    ELSE PES.cod_prod
+    	END                         AS cod_prod
+    FROM pescaixa	PES  
+    INNER JOIN pedcarit PIT  
+        ON  PIT.COD_PROD = PES.COD_PROD
+	    AND PIT.cod_pedcar = PES.cod_pedcar
+    INNER JOIN pedcarreg PED  
+	    ON  PIT.COD_PEDCAR = PED.COD_PEDCAR
+    LEFT JOIN pescaixa PES2
+	    ON  PES.cod_barra_origem = PES2.cod_barra
+    LEFT JOIN USU_TP_BC_SAIDA BC  
+	    ON  PES.cod_pedcar = BC.PED
+	    AND CASE 
+                WHEN PES.cod_prod = '011000' THEN BC.TRA
+	    	    WHEN PES.cod_prod = '011001' THEN BC.DIA
+	    	    WHEN PES.cod_prod = '011004' THEN BC.PA
+	    	    ELSE '99999'
+	        END	= PES.cod_prod 
+
+WHERE 
+    CAST(PES.data_sai AS DATE) >= '2025-01-01'
+    AND PES.status <> 'C'		  
+
+GROUP BY 
+    PED.COD_PEDCAR,
+	CAST(PES.data_sai AS DATE),
+	PED.cod_emp,
+	PED.cod_repres,
+	PED.status,
+	CASE 
+        WHEN PES.cod_prod = '011000' and BC.PED IS NOT NULL THEN '011009'
+        WHEN PES.cod_prod = '011001' and BC.PED IS NOT NULL THEN '011009'
+	    WHEN PES.cod_prod = '011004' and BC.PED IS NOT NULL THEN '011009'
+	    ELSE PES.cod_prod
+	END,
+	PES.cod_prod2,
+	PIT.quant,
+	PIT.p1,
+	PES.sif,
+	PES2.num_lote,
+	CAST(PED.embarque AS DATE),
+	CASE 
+        WHEN PES.cod_inv IS NULL
+	    THEN 'NÃO'
+	    ELSE 'SIM'
+	END
+	pes.validade	
+), 
+
+terceiro as (
     SELECT PES.cod_pedcar		    AS pedcar,
 	    CAST(PES.data_sai AS DATE)  AS data,
 	    PED.cod_emp				    AS empresa,
@@ -152,7 +152,7 @@ union_table AS (
     UNION  ALL
     
     SELECT * 
-    FROM TERCEIRO
+    FROM terceiro
 )
 
 SELECT
@@ -181,7 +181,7 @@ SELECT
         WHEN SAIDAS.num_lote IN (0,1) OR SAIDAS.num_lote IS NULL
 		THEN cast(SAIDAS.sif as numeric)
 		ELSE SAIDAS.num_lote
-	    END	            AS sif_final
+	END	                AS sif_final
 FROM union_Table SAIDAS
 LEFT JOIN valorprod2 CUSTO
 	ON  SAIDAS.data_saida = CAST((CUSTO.data+1) AS DATE)
