@@ -1,7 +1,6 @@
 {{ config(materialized='table')}}
 
 WITH
-
 imposto_entrada AS (
     SELECT
         codemp,																						
@@ -74,7 +73,6 @@ imposto_entrada AS (
 		datger
     FROM {{ ref('staging_imposto_entrada') }}
 ),
-
 suprimento_entrada AS (
     SELECT
         codemp,
@@ -119,14 +117,12 @@ suprimento_entrada AS (
 		dt_carga
     FROM {{ ref('staging_suprimento_entrada') }}
 ),
-
 cep AS (
     SELECT
         codrai,
         sigufs
     FROM {{ ref('source_cep') }}
 ),
-
 cadastro_cliente_historico AS (
     SELECT
         codemp,
@@ -135,7 +131,6 @@ cadastro_cliente_historico AS (
       	confin
     FROM {{ ref('source_cadastro_cliente_historico') }}
 ),
-
 preco_pauta AS (
     SELECT
         codemp,
@@ -145,7 +140,6 @@ preco_pauta AS (
         prebas
     FROM {{ ref('source_preco_pauta') }} 
 ),
-
 source_compra_ordem_dado_geral AS (
     SELECT
         compra_ordem_dado_geral_numocp AS numocp,
@@ -154,7 +148,6 @@ source_compra_ordem_dado_geral AS (
 		obsocp
     FROM {{ ref('source_compra_ordem_dado_geral') }}
 ),
-
 imposto_suprimento_entrada_I AS (
     SELECT
         I.codemp		AS codemp,																						
@@ -265,11 +258,9 @@ imposto_suprimento_entrada_I AS (
 		AND CO.codfil = S.codfil
 		AND CO.numocp = S.numocp
 	
-WHERE
-        I.datent >= '20250101'	
+WHERE 	I.datent >= '20250101'	
 	AND S.codsnf not in ('NDB','REC')
 ),
-
 imposto_suprimento_entrada_S AS (
     SELECT
         S.codemp        AS codemp,																						
@@ -383,7 +374,6 @@ imposto_suprimento_entrada_S AS (
 	WHERE   S.datent >= '20250101' 
 		AND S.codsnf in ('NDB','REC')
 ),
-
 consolidado AS (
     SELECT *
     FROM imposto_suprimento_entrada_I
