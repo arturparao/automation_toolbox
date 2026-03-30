@@ -1,39 +1,38 @@
 {{ config(materialized='table') }}
 
-WITH pescaixa AS (
-    SELECT
-        *
-    FROM {{ ref('source_ais_sp_producao')}}
-), pedcarit AS (
-    SELECT
-        *
-    FROM {{ ref('source_ais_sp_recebimento_produto')}}
-), pedcarreg AS (
-    SELECT
-        *
-    FROM {{ ref('source_ais_sp_pedido_carregado')}}
-), USU_TP_BC_SAIDA AS (
-    SELECT
-        *
-    FROM {{ ref('source_ais_sp_boi_casado')}}
-), t_pedcom AS (
-    SELECT
-        *
+WITH 
+pescaixa AS (
+   	SELECT  *
+   	FROM {{ ref('source_ais_sp_producao')}}
+), 
+pedcarit AS (
+   	SELECT *
+   	FROM {{ ref('source_ais_sp_recebimento_produto')}}
+), 
+pedcarreg AS (
+   	SELECT *
+    	FROM {{ ref('source_ais_sp_pedido_carregado')}}
+), 
+USU_TP_BC_SAIDA AS (
+   	SELECT *
+   	FROM {{ ref('source_ais_sp_boi_casado')}}
+), 
+t_pedcom AS (
+    SELECT *
     FROM {{ ref('source_ais_sp_recebimento_devolucao')}}
-), T_REC AS (
-    SELECT
-        *
+), 
+T_REC AS (
+    SELECT *
     FROM {{ ref("source_ais_sp_recebimento")}}
-), T_PEDCOMIT AS (
-    SELECT
-        *
+), 
+T_PEDCOMIT AS (
+    SELECT *
     FROM {{ ref('source_ais_sp_recebimento_produto_item')}}
-), valorprod2 AS (
-    SELECT
-        *
+), 
+valorprod2 AS (
+    SELECT *
     FROM {{ ref('source_custo_sao_paulo')}}
 ), 
-
 BM AS (
     SELECT 
         PED.cod_pedcar,
@@ -65,7 +64,7 @@ BM AS (
     	    WHEN PES.cod_prod = '011004' AND BC.PED IS NOT NULL THEN '011009'
     	    ELSE PES.cod_prod
     	END                         AS cod_prod
-    FROM pescaixa	PES  
+    FROM pescaixa PES  
     INNER JOIN pedcarit PIT  
         ON  PIT.COD_PROD = PES.COD_PROD
 	    AND PIT.cod_pedcar = PES.cod_pedcar
@@ -82,8 +81,7 @@ BM AS (
 	    	    ELSE '99999'
 	        END	= PES.cod_prod 
 
-WHERE 
-    CAST(PES.data_sai AS DATE) >= '2025-01-01'
+WHERE   CAST(PES.data_sai AS DATE) >= '2025-01-01'
     AND PES.status <> 'C'		  
 
 GROUP BY 
@@ -111,9 +109,9 @@ GROUP BY
 	END
 	pes.validade	
 ), 
-
 terceiro as (
-    SELECT PES.cod_pedcar		    AS pedcar,
+    SELECT 
+		PES.cod_pedcar		    	AS pedcar,
 	    CAST(PES.data_sai AS DATE)  AS data,
 	    PED.cod_emp				    AS empresa,
 	    ''						    AS representante,
@@ -144,7 +142,6 @@ INNER JOIN t_pedcomit PIT
 	ON  REC.cod_ped  = PIT.cod_ped
 	AND PES.cod_prod = PIT.cod_prod
 ), 
-
 union_table AS (
     SELECT * 
     FROM BM
